@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+
+  </head>
+  <body>
+  <title>Чат</title>
+  <h1 style="text-align:center">Чат</h1>
+  <div style="display:table;margin:auto">
+	<div id="example">
+	</div>
+	<input type="text" placeholder="Сообщение" id="im" onkeypress="return runScript(event)">
+	<input type="button" value="Отправить" onclick="addMessage()">
+	
+  </div>
+  
+  <script type="text/javascript">
+    var xhr = new XMLHttpRequest();
+	var last_time = -1;
+	getChat();
+	
+	
+	async function getChat() {
+		
+		let response = await fetch(
+		"http://localhost:10000/chat/?last_time="+last_time,
+		{
+			method: 'GET'
+		});
+		
+		if (response.status == 502) {
+			await getChat();
+		} else if (response.status == 200) {
+			var json = await response.json();
+			last_time = parseInt(json[0]);
+			var messages = json[1];
+			if (messages != null) {
+				for (var i = 0; i < messages.length; i++) {
+					drawMessage(messages[i]);
+				}
+			}
+			await getChat();
+		} else {
+			alert(response.statusText);
+			await getChat();
+		}
+		
+		//xhr.open('GET', "http://localhost:10000/chat/?last_time="+last_time, true);
+		//xhr.send();
+		//xhr.onload = function() {
+		//	if (xhr.status == 200) {
+		//		var json = JSON.parse(xhr.responseText);
+		//		last_time = parseInt(json[0]);
+		//		var messages = json[1];
+		//		if (messages != null) {
+		//			for (var i = 0; i < messages.length; i++) {
+		//				drawMessage(messages[i]);
+		//			}
+		//		}
+		//	}
+		//}
+	}
+	
+	function addMessage() {
+		var input = document.getElementById("im");
+		if (input.value != "") {
+			xhr.open('POST', "http://localhost:10000/chat", true);
+			var message_obj = new Object();
+			message_obj.id = parseInt(localStorage.getItem("iddd"));
+			message_obj.message = input.value;
+			xhr.send(JSON.stringify(message_obj));
+			input.value = "";
+			xhr.onload = function() {
+				if (xhr.status == 403) {
+					alert("Ошибка индификации пользователя.");
+					document.location.href = "index.html";
+				}
+			}
+		}
+	}
+	
+	function runScript(e) {
+    //See notes about 'which' and 'key'
+    if (e.keyCode == 13) {
+        addMessage();
+        return false;
+    }
+}
+	
+	function drawMessage(message) {
+		let div = document.createElement('div');
+		var html_mess = "";
+		html_mess += "<b>"+message.username+": "+"</b>";
+		html_mess += message.message;
+		div.innerHTML = html_mess;
+		var chat = document.getElementById("example");
+		chat.append(div);
+		chat.scrollTop = chat.scrollHeight;
+	}
+	
+    function test(){
+      xhr.open('GET', "http://10.1.0.53:10000/?name="+username.value+"&pass="+pass.value, false);
+      xhr.send();
+    }
+    </script>
+
+  </body>
+</html>

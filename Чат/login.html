@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+
+  </head>
+  <body>
+  <title>Авторизация</title>
+  <h1 style="text-align:center">Авторизация</h1>
+  <div style="display:table;margin:auto">
+  <div>
+  <p1>Напиши логин</p1>
+  <input type="text" id="a1"></input>
+  </div>
+  <div>
+  <p1>Напиши пароль</p1>
+  <input type="text" id="a2"></input>
+  </div>
+  <button name="button" onclick="test()">Отправить</button>
+  <br>
+  <button name="button" onclick="register()">Нет аккаунта</button>
+  </div>
+  
+  <script type="text/javascript">
+    var xhr = new XMLHttpRequest();
+    function test(){
+      let username = document.getElementById('a1');
+      let pass = document.getElementById('a2');
+      xhr.open('GET', "http://localhost:10000/login/?login="+username.value+"&pass="+pass.value, true);
+      xhr.send();
+    }
+	function register() {
+		document.location.href = "index.html";
+	}
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            localStorage.setItem("iddd",xhr.responseText);
+            document.location.href = "chat.html";
+        } else if (xhr.status == 422) {
+			alert("Пара логин и пароль недействительны!");
+		}
+    }
+            </script>
+
+  </body>
+</html>
