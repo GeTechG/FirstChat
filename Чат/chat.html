@@ -11,7 +11,7 @@
   <div style="display:table;margin:auto">
 	<div id="example">
 	</div>
-	<input type="text" placeholder="Сообщение" id="im" onkeypress="return runScript(event)">
+	<textarea placeholder="Сообщение" id="im" onkeypress="return runScript(event)" onkeydown="if (event.keyCode == 16) { shift = true; }" onkeyup="if (event.keyCode == 16) { shift = false; }"></textarea>
 	<input type="button" value="Отправить" onclick="addMessage()">
 	
   </div>
@@ -21,6 +21,7 @@
 	var last_time = -1;
 	getChat();
 	
+	var shift = false;
 	
 	async function getChat() {
 		
@@ -65,7 +66,7 @@
 	
 	function addMessage() {
 		var input = document.getElementById("im");
-		if (input.value != "") {
+		if (input.value.trim() != "") {
 			xhr.open('POST', "http://localhost:10000/chat", true);
 			var message_obj = new Object();
 			message_obj.id = parseInt(localStorage.getItem("iddd"));
@@ -83,7 +84,7 @@
 	
 	function runScript(e) {
     //See notes about 'which' and 'key'
-    if (e.keyCode == 13) {
+    if (e.keyCode == 13 && !shift) {
         addMessage();
         return false;
     }
@@ -91,10 +92,13 @@
 	
 	function drawMessage(message) {
 		let div = document.createElement('div');
-		var html_mess = "";
-		html_mess += "<b>"+message.username+": "+"</b>";
-		html_mess += message.message;
-		div.innerHTML = html_mess;
+		div.id = "message";
+		let div1 = document.createElement('div');
+		div1.innerHTML = "<b>"+message.username+": "+"</b>";
+		let div2 = document.createElement('div');
+		div2.innerHTML = message.message.replace(/\n/g, '<br>');
+		div.append(div1);
+		div.append(div2);
 		var chat = document.getElementById("example");
 		chat.append(div);
 		chat.scrollTop = chat.scrollHeight;

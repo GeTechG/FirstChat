@@ -20,7 +20,7 @@ public class Handle {
 
     public static void main(String[] args) throws Exception {
         Factory.loadBase();
-        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
         HttpServer server = HttpServer.create(new InetSocketAddress(10000), 0);
         server.createContext("/", new MyHandler());
         server.createContext("/login", new MyHandler());
@@ -213,9 +213,12 @@ public class Handle {
 
                         Object[] message_arr = new Object[2];
 
-                        while (lastMessage >= messages.size() - 1) {
+                        int timeout = 60_000;
+                        int time = 0;
+                        while (lastMessage >= messages.size() - 1 && time < timeout) {
                             try {
-                                Thread.sleep(0);
+                                Thread.sleep(1);
+                                time++;
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
