@@ -1,51 +1,54 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <link rel="stylesheet" href="style.css">
-    <meta charset="utf-8">
 
-  </head>
-  <body>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8">
+
+</head>
+
+<body>
   <title>Регистрация</title>
   <h1 style="text-align:center">Регистрация</h1>
   <div style="display:table;margin:auto">
-  <div>
-  <p1>Напиши имя</p1>
-  <input type="text" id="a1" value=""></input>
+    <div>
+      <p1>Напиши имя</p1>
+      <input type="text" id="a1" value=""></input>
+    </div>
+    <div>
+      <p1>Напиши логин</p1>
+      <input type="text" id="a2"></input>
+    </div>
+    <div>
+      <p1>Напиши пароль</p1>
+      <input type="text" id="a3"></input>
+    </div>
+    <button name="button" onclick="test()">Отправить</button>
+    <br>
+    <button name="button" onclick="login()">Есть уже аккаунт</button>
   </div>
-  <div>
-  <p1>Напиши логин</p1>
-  <input type="text" id="a2"></input>
-  </div>
-  <div>
-  <p1>Напиши пароль</p1>
-  <input type="text" id="a3"></input>
-  </div>
-  <button name="button" onclick="test()">Отправить</button>
-  <br>
-  <button name="button" onclick="login()">Есть уже аккаунт</button>
-  </div>
-  
+
   <script type="text/javascript">
     var xhr = new XMLHttpRequest();
-    function test(){
+    function test() {
       let username = document.getElementById('a1');
       let login = document.getElementById('a2');
       let pass = document.getElementById('a3');
-	  //ессли чо там 49 на 51 сменить
-      xhr.open('GET', "http://localhost:10000/?name="+username.value+"&login="+login.value+"&pass="+pass.value, true);
+      //ессли чо там 49 на 51 сменить
+      xhr.open('GET', "http://10.1.0.53:10000/?name=" + username.value + "&login=" + login.value + "&pass=" + pass.value, true);
       xhr.send();
-	  xhr.onload = function() {
+      xhr.onload = function () {
         if (xhr.status == 200) {
-			localStorage.setItem("iddd",xhr.responseText);
-            document.location.href = "chat.html";
+          localStorage.setItem("iddd", xhr.responseText);
+          document.location.href = "chat.html";
         };
+      }
     }
+    function login() {
+      document.location.href = "login.html";
     }
-	function login() {
-		document.location.href = "login.html";
-	}
-            </script>
+  </script>
 
-  </body>
+</body>
+
 </html>

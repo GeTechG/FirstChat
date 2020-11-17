@@ -32,7 +32,7 @@
 	async function getChat() {
 		
 		let response = await fetch(
-		"http://localhost:10000/chat/?last_time="+last_time,
+		"http://10.1.0.53:10000/chat/?last_time="+last_time,
 		{
 			method: 'GET'
 		});
@@ -73,7 +73,7 @@
 	function addMessage() {
 		var input = document.getElementById("im");
 		if (input.value.trim() != "") {
-			xhr.open('POST', "http://localhost:10000/chat", true);
+			xhr.open('POST', "http://10.1.0.53:10000/chat", true);
 			var message_obj = new Object();
 			message_obj.id = parseInt(localStorage.getItem("iddd"));
 			message_obj.message = input.value;
