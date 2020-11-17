@@ -8,18 +8,24 @@
   <body>
   <title>Чат</title>
   <h1 style="text-align:center">Чат</h1>
-  <div style="display:table;margin:auto">
-	<div id="example">
-	</div>
-	<textarea placeholder="Сообщение" id="im" onkeypress="return runScript(event)" onkeydown="if (event.keyCode == 16) { shift = true; }" onkeyup="if (event.keyCode == 16) { shift = false; }"></textarea>
-	<input type="button" value="Отправить" onclick="addMessage()">
-	
+  <div style="display:ruby">
+	  <div style="display: grid">
+		<button name="button" onclick="test()">Общий чат</button>
+	  </div>
+	  <div style="display:table;margin:auto">
+		<div id="example">
+		</div>
+		<textarea placeholder="Сообщение" id="im" onkeypress="return runScript(event)" onkeydown="if (event.keyCode == 16) { shift = true; }" onkeyup="if (event.keyCode == 16) { shift = false; }"></textarea>
+		<input type="button" value="Отправить" onclick="addMessage()">
+	  </div>
   </div>
   
   <script type="text/javascript">
     var xhr = new XMLHttpRequest();
 	var last_time = -1;
 	getChat();
+	
+	Chats = new Object();
 	
 	var shift = false;
 	
