@@ -1,0 +1,61 @@
+body{ 
+    font-family: Tahoma;
+    background: #000066;
+    margin: 0;
+    background-image: url(https://u.kanobu.ru/editor/images/57/c665d861-a7de-4895-ac43-fbd2f73d0ff7.jpg);
+    background-position-y: -85px;
+    position: absolute;
+}
+h1{
+    text-transform: uppercase;
+    padding-bottom: 5px;
+    border-bottom: 3px solid #5200a5;
+    margin-top: 50px;
+    margin-left: 120px;
+    width: 250px;
+}
+#form{
+    margin: o auto;
+    background: #00fdff;
+    width: 490px;
+    height: 490px;
+    padding: 20px;
+    box-shadow: #5200a5;
+    margin-left: 290px;
+    margin-top: 255px;
+    border-radius: 50%;
+    opacity: 0.7;
+    display: inline-grid;
+}
+input{
+    margin-top: 10px;
+    height: 20px;
+    width: 450px;
+}
+button{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    height: 25px;
+    
+}
+.im{
+    margin-left: 15px;
+}
+.lo{
+    margin-left: 15px;
+}
+.pa{
+    margin-left: 15px;
+}
+.ac{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    text-decoration: none;
+    color: black;
+}
+
+.ac:hover {
+    color: red;
+}

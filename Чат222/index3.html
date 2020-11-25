@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="style3.css">
+    <meta charset="UTF-8">
+    <title>Чат</title>
+</head>
+
+<body>
+    <div class="okno">
+        <div class="pis">
+            <div class="slo">Чат для пидорасов</div>
+        </div>
+        <div class="ram" id="rama">
+           
+        </div>
+        <div class="g1">
+            <textarea placeholder="Сообщение" id='soo' onkeypress="return runScript(event)"
+                onkeydown="if (event.keyCode == 16) { shift = true; }"
+                onkeyup="if (event.keyCode == 16) { shift = false; }"></textarea>
+            <input type="button" value="Отправить">
+        </div>
+    </div>
+
+    <script>
+        xhr = new XMLHttpRequest();
+        var shift = false;
+
+        let last=-1;
+
+        getMessage()
+
+        function runScript(e) {
+            //See notes about 'which' and 'key'
+            if (e.keyCode == 13 && !shift) {
+                //отправка сообщения
+                newMessage();
+                return false;
+            }
+        }
+        function newMessage() {
+            let soo = document.getElementById("soo");
+            if (soo.value == ""){
+                return
+            }
+            xhr.open("POST", "http://10.1.0.53:10000/chat/?mode=1&chatID=-1");
+            xhr.send(JSON.stringify({
+                'id': parseInt(localStorage.getItem('aa')),
+                'message': soo.value
+            }));
+            soo.value = "";
+        }
+        async function getMessage() {
+            let Respons= await fetch("http://10.1.0.53:10000/chat/?mode=0&id="+parseInt(localStorage.getItem('aa')),{
+                method : ("POST"),
+                body : JSON.stringify({
+                    'last_time_general' : last
+                })
+            })
+            if (Respons.status==200){
+                let kyha= await Respons.json();
+                let kyha2=kyha[0];
+                last=kyha2.last_time;
+                for (let i = 0; i < kyha2.messages.length; i++) {
+                    let s=kyha2.messages[i];
+
+                    let rama=document.getElementById("rama");
+                    rama.innerHTML+= ' <div class="soob"><div class="name">'+s.username+'</div><div class="so1">'+s.message+'</div></div>';
+                    rama.scrollTop=rama.scrollHeight;
+                }
+                await getMessage();
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,8 @@
 package javaconnection;
 
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonArray;
+import com.eclipsesource.json.JsonObject;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.*;
 import javafx.util.Pair;
@@ -8,15 +11,19 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
+
+import static javaconnection.Factory.saveBase;
 
 public class Handle {
 
     static HashMap<Pair<String,String>,Integer> users_search = new HashMap<Pair<String,String>,Integer>();
     static ArrayList<User> users = new ArrayList<>();
     static ArrayList<Message> messages = new ArrayList<>();
+    static ArrayList<ArrayList<Message>> privateChats = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         Factory.loadBase();
@@ -59,6 +66,7 @@ public class Handle {
 
             String url = t.getHttpContext().getPath();
             t.getResponseBody();
+
 
             switch (url) {
                 case "/":
@@ -172,6 +180,7 @@ public class Handle {
                 int id = users.size();
                 users_search.put(acc_user,id);
                 users.add(user);
+                saveBase();
 
 
                 sendGoodResponse(t, String.valueOf(id));
@@ -199,51 +208,26 @@ public class Handle {
             query = getQuery(t);
             switch (t.getRequestMethod()) {
                 case "GET":
-
-                    HashMap<String, Object> finalQuery = query;
-                    Runnable task = () -> {
-                        int lastMessage = 0;
-
-                        try {
-                            lastMessage = Integer.parseInt(String.valueOf(finalQuery.get("last_time")));
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-
-                        Object[] message_arr = new Object[2];
-
-                        int timeout = 60_000;
-                        int time = 0;
-                        while (lastMessage >= messages.size() - 1 && time < timeout) {
-                            try {
-                                Thread.sleep(1);
-                                time++;
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        };
-                        message_arr[0] = messages.size() - 1;
-                        if (lastMessage < messages.size() - 1) {
-                            message_arr[1] = messages.subList(lastMessage + 1, messages.size());
-                        }
-
-
+                    Integer userID = -1;
+                    try {
+                        userID = Integer.valueOf((String) query.get("id"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        sendBadResponse(t, 403);
+                        return;
+                    }
+                    if (users.get(userID) != null) {
                         Gson gson = new Gson();
 
-                        String jsonStr = gson.toJson(message_arr);
+                        String json = gson.toJson(users.get(userID).private_chats_id);
 
-                        sendGoodResponse(t, jsonStr);
-                    };
-
-                    Thread thread_message = new Thread(task);
-                    thread_message.start();
+                        sendGoodResponse(t, json);
+                    } else {
+                        sendBadResponse(t, 403);
+                    }
 
                     break;
-
                 case "POST":
-
-                    int user_id = -1;
 
                     String json_message = null;
 
@@ -255,15 +239,117 @@ public class Handle {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    Message message = Factory.createNewMessage(json_message);
-                    if (message != null) {
-                        if (Factory.AddMassageToBase(message)) {
-                            sendGoodResponse(t, "");
-                            return;
-                        }
-                    }
-                    sendBadResponse(t, 403);
 
+                    try {
+                        switch (Integer.parseInt((String) query.get("mode"))) {
+                            case 0:
+
+                                HashMap<String, Object> finalQuery = query;
+                                String finalJson_message = json_message;
+                                Runnable task = () -> {
+                                    int last_time_general = -1;
+                                    JsonObject lastTimePrivate = null;
+                                    int userId = -1;
+                                    try {
+                                        JsonObject jsonValue = Json.parse(finalJson_message).asObject();
+
+                                        last_time_general = jsonValue.getInt("last_time_general", -1);
+                                        if (jsonValue.get("last_time_privates") != null)
+                                            lastTimePrivate = jsonValue.get("last_time_privates").asObject();
+                                        userId = Integer.parseInt((String) finalQuery.get("id"));
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+
+
+                                    Object[] message_arr = new Object[2];
+
+                                    HashMap<Integer, MessageDataSend> privateMessages = new HashMap<>();
+
+                                    int timeout = 60_000;
+                                    int time = 0;
+                                    boolean findNewMessages = false;
+                                    while (!findNewMessages && time < timeout) {
+                                        try {
+                                            if (last_time_general < messages.size() - 1) {
+                                                findNewMessages = true;
+                                                message_arr[0] = new MessageDataSend(messages.size() - 1, messages.subList(last_time_general + 1, messages.size()));
+                                            }
+                                            if (lastTimePrivate != null) {
+                                                List<String> names = lastTimePrivate.names();
+                                                for (int i = 0; i < names.size(); i++) {
+                                                    if (lastTimePrivate.get(names.get(i)).asInt() < privateChats.get(Integer.parseInt(names.get(i))).size() - 1) {
+                                                        findNewMessages = true;
+                                                        privateMessages.put(Integer.valueOf(names.get(i)), new MessageDataSend(privateChats.get(Integer.parseInt(names.get(i))).size() - 1, privateChats.get(Integer.parseInt(names.get(i))).subList(lastTimePrivate.get(names.get(i)).asInt() + 1, privateChats.get(Integer.parseInt(names.get(i))).size())));
+                                                    }
+                                                }
+                                            }
+
+                                            Thread.sleep(1);
+                                            time++;
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    ;
+                                    message_arr[1] = privateMessages;
+
+
+                                    Gson gson = new Gson();
+
+                                    String jsonStr = gson.toJson(message_arr);
+
+                                    sendGoodResponse(t, jsonStr);
+                                };
+
+                                Thread thread_message = new Thread(task);
+                                thread_message.start();
+
+                                break;
+                            case 1:
+
+                                int chatId = -1;
+                                try {
+                                    chatId = Integer.parseInt((String) query.get("chatID"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    sendBadResponse(t, 406);
+                                    return;
+                                }
+                                Message message = Factory.createNewMessage(json_message, chatId);
+                                if (message != null) {
+                                    if (Factory.AddMassageToBase(message)) {
+                                        sendGoodResponse(t, "");
+                                        return;
+                                    }
+                                }
+                                sendBadResponse(t, 403);
+
+                                break;
+                            case 2:
+
+                                JsonObject jsonObject = Json.parse(json_message).asObject();
+
+                                int self_id = jsonObject.getInt("self_id", -1);
+                                int user_id = jsonObject.getInt("user_id", -1);
+
+                                Integer chat_id = Factory.AddPrivateChat(self_id, user_id);
+
+                                if (chat_id != null) {
+                                    sendGoodResponse(t, String.valueOf(chat_id));
+                                    Factory.saveBase();
+                                } else {
+                                    sendBadResponse(t, 406);
+                                    return;
+                                }
+
+                                break;
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        sendBadResponse(t,403);
+                        return;
+                    }
                     break;
             }
         }

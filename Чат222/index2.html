@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="css2.css">
+    <title>Вход в систему</title>
+</head>
+<body>
+  <div id="form">
+    <h1>Вход</h1>
+    <div class="lo">
+      <label for="">Логин:</label>
+      <input type="text" id="skr2">
+    </div>
+    <div class="pa">
+      <label for="">Пароль:</label>
+      <input type="text" id="skr1">
+    </div>
+    <centre>
+      <button onclick="gl()">Войти</button>
+    </centre>
+  </div>
+
+  <script type="text/javascript">
+    function gl() {
+      let xhr = new XMLHttpRequest();
+      let skr1 = document.getElementById("skr1");
+      let skr2 = document.getElementById("skr2");
+
+      xhr.open('GET', "http://10.1.0.53:10000/login/?pass=" + skr1.value +"&login=" + skr2.value);
+      xhr.send();
+
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          localStorage.setItem('aa', xhr.responseText);
+          document.location.href = "index3.html";
+        };
+      }
+    }
+  </script>
+</body>
+</html>

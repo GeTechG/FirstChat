@@ -1,0 +1,51 @@
+body{ 
+    font-family: Tahoma;
+    background: #000066;
+    margin: 0;
+    background-image: url(https://st.akihabarashop.ru/12/2553/353/maxresdefault.jpg);
+    background-size: cover;
+}
+h1{
+    margin: 0;
+    text-transform: uppercase;
+    padding-bottom: 5px;
+    margin-top: 100px;
+    margin-left: 220px;
+    width: 350px;
+    color: darkblue;
+}
+#form{
+    margin: o auto;
+    background:#ffff40;
+    width: 540px;
+    height: 540px;
+    padding: 20px;
+    box-shadow: #0000bf;
+    margin-left: 755px;
+    margin-top: 110px;
+    border-radius: 50%;
+    opacity: 0.7;
+    display: inline-grid;
+}
+input{
+    margin-top: 0px;
+    height: 20px;
+    width: 400px;
+}
+button{
+    margin-left: 220px;
+    margin-top: 40px;
+    width: 90px;
+    background-color: darkblue;
+    color: aliceblue;
+    
+}
+.im{
+    margin-left: 10px;
+}
+.lo{
+    margin-left: 20px;
+}
+.pa{
+    margin-left: 10px;
+}

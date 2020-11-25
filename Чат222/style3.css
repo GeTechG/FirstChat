@@ -1,0 +1,74 @@
+body{
+ background-image: url("thumb-1920-947705.png");
+ background-position: right;
+}
+
+.okno{
+    width: 402px;
+    height: 602px;
+    text-align: center;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 80px;
+    background-image: url("r.png");
+}
+.pis{
+    width: 400px;
+    height: 40px;
+    border: 1px solid 	#000000;
+    border-radius: 10px;
+    background: #c38bbf;
+    margin-top: 5px;
+}
+.slo{
+    margin-top: 10px;
+    background: #c38bbf;
+}
+.ram{
+    width: 395px;
+    height: 460px;
+    border: 1px solid 	#000000;
+    margin-top: 13px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+::-webkit-scrollbar { /* chrome based */
+    width: 0px;  /* ширина scrollbar'a */
+    background: transparent;  /* опционально */
+}
+
+input{
+    width: 80px;
+    height: 20px;
+    margin-left: 26px;
+    margin-top: 30px;
+
+}
+textarea{
+    width: 230px;
+    height: 50px;
+    margin-top: 15px;
+}
+.g1{
+    display: inline-flex;
+}
+.soob{
+width: fit-content;
+height: auto;
+text-align: left;
+}
+.so1{
+background-color: seashell;
+border-radius: 10px;
+border-color: black;
+border: 1px solid;
+padding: 5px;
+word-wrap: break-word;
+max-width: 380px;
+}
+.name{
+}

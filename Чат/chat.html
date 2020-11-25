@@ -9,7 +9,7 @@
   <title>Чат</title>
   <h1 style="text-align:center">Чат</h1>
   <div style="display:ruby">
-	  <div style="display: grid">
+	  <div style="display: grid" id="chats_">
 		<button name="button" onclick="test()">Общий чат</button>
 	  </div>
 	  <div style="display:table;margin:auto">
@@ -22,6 +22,21 @@
   
   <script type="text/javascript">
     var xhr = new XMLHttpRequest();
+	
+	var privateChats;
+	
+	xhr.open('GET', "http://10.1.0.53:10000/chat/?id="+localStorage.getItem("iddd"));
+	xhr.send();
+	xhr.onload = function() {
+		if (xhr.status == 200) {
+			privateChats = JSON.parse(xhr.responseText);
+			addPrivateChats(JSON.parse(privateChats));
+		} else if (xhr.status == 403) {
+			alert("Ошибка индификации пользователя.");
+			document.location.href = "index.html";
+		}
+	}
+	
 	var last_time = -1;
 	getChat();
 	
@@ -30,19 +45,21 @@
 	var shift = false;
 	
 	async function getChat() {
-		
+
+
 		let response = await fetch(
-		"http://10.1.0.53:10000/chat/?last_time="+last_time,
+		"http://10.1.0.53:10000/chat/?id="+localStorage.getItem("iddd")+"&mode=0",
 		{
-			method: 'GET'
+			method: 'POST',
+			body : JSON.stringify({"last_time_general" : last_time})
 		});
 		
 		if (response.status == 502) {
 			await getChat();
 		} else if (response.status == 200) {
 			var json = await response.json();
-			last_time = parseInt(json[0]);
-			var messages = json[1];
+			last_time = parseInt(json[0]["last_time"]);
+			var messages = json[0]["messages"];
 			if (messages != null) {
 				for (var i = 0; i < messages.length; i++) {
 					drawMessage(messages[i]);
@@ -73,7 +90,7 @@
 	function addMessage() {
 		var input = document.getElementById("im");
 		if (input.value.trim() != "") {
-			xhr.open('POST', "http://10.1.0.53:10000/chat", true);
+			xhr.open('POST', "http://10.1.0.53:10000/chat/?mode=1&chatID=-1");
 			var message_obj = new Object();
 			message_obj.id = parseInt(localStorage.getItem("iddd"));
 			message_obj.message = input.value;
@@ -90,17 +107,40 @@
 	
 	function runScript(e) {
     //See notes about 'which' and 'key'
-    if (e.keyCode == 13 && !shift) {
-        addMessage();
-        return false;
-    }
-}
+		if (e.keyCode == 13 && !shift) {
+			addMessage();
+			return false;
+		}
+	}
+	
+	function addPrivateChat(id_user) {
+		if (id_user != parseInt(localStorage.getItem("iddd"))) {
+			xhr.open('POST', "http://10.1.0.53:10000/chat/?mode=2");
+			xhr.send(JSON.stringify({'self_id' : parseInt(localStorage.getItem("iddd")), 'user_id' : id_user}));
+			xhr.onload = function() {
+				if (xhr.status == 406) {
+					alert("Чат уже существует");
+				} else if (xhr.status == 200) {
+				}
+			}
+		} else {
+			alert("Чат сам с собой создать нельзя");
+		}
+	}
+	
+	function addPrivateChats(chats) {
+		for (var i = 0; i < chats.length; i++) {
+			var chats = document.getElementById("chats_");
+			var butt = document.createElement("button");
+			chats.append(butt);
+		}
+	}
 	
 	function drawMessage(message) {
 		let div = document.createElement('div');
 		div.id = "message";
 		let div1 = document.createElement('div');
-		div1.innerHTML = "<b>"+message.username+": "+"</b>";
+		div1.innerHTML = "<button onclick='addPrivateChat("+message.id+")'>X</button><b>"+message.username+": "+"</b>";
 		let div2 = document.createElement('div');
 		div2.innerHTML = message.message.replace(/\n/g, '<br>');
 		div.append(div1);

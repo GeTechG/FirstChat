@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <title>Регистрация</title>
+</head>
+
+<body>
+  <div id="form">
+    <h1>Регистрация</h1>
+    <div class="im">
+      <label for="">Имя пользователя:</label>
+      <input type="text" id="skr1">
+    </div>
+    <div class="lo">
+      <label for="">Логин:</label>
+      <input type="text" id="skr3">
+    </div>
+    <div class="pa">
+      <label for="">Пароль:</label>
+      <input type="text" id="skr2">
+    </div>
+    <button onclick="gl()">Зарегистрироваться</button>
+    <a href="index2.html" class="ac">Уже есть аккаунт</a>
+  </div>
+
+  <script type="text/javascript">
+    function gl() {
+      let xhr = new XMLHttpRequest();
+      let skr1 = document.getElementById("skr1");
+      let skr2 = document.getElementById("skr2");
+      let skr3 = document.getElementById("skr3");
+
+      xhr.open('GET', "http://10.1.0.53:10000/?name=" + skr1.value + "&pass=" + skr2.value +"&login=" + skr3.value);
+      xhr.send();
+
+      xhr.onload = function () {
+        if (xhr.status == 200) {
+          localStorage.setItem('aa', xhr.responseText);
+          document.location.href = "index3.html";
+           //document.location.href = "";
+        };
+      }
+    }
+  </script>
+
+</body>
+
+</html>
