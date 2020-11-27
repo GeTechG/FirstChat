@@ -59,6 +59,12 @@
                 })
             })
             if (Respons.status==200){
+				//прикол с аудио
+				if (last > -1) {
+					var audio = new Audio();
+					audio.src = 'https://zvukipro.com/uploads/files/2019-03/1551942800_5f57a7619ce385e.mp3';
+					audio.autoplay = true;
+				}
                 let kyha= await Respons.json();
                 let kyha2=kyha[0];
                 last=kyha2.last_time;

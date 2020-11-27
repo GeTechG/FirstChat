@@ -32,6 +32,7 @@ public class Handle {
         server.createContext("/", new MyHandler());
         server.createContext("/login", new MyHandler());
         server.createContext("/chat", new MyHandler());
+        server.createContext("/users", new MyHandler());
         server.setExecutor(threadPoolExecutor); // creates a default executor
         server.start();
     }
@@ -77,6 +78,9 @@ public class Handle {
                     break;
                 case "/chat":
                     chat(t);
+                    break;
+                case "/users":
+                    users(t);
                     break;
             }
 
@@ -350,6 +354,21 @@ public class Handle {
                         sendBadResponse(t,403);
                         return;
                     }
+                    break;
+            }
+        }
+
+        void users(HttpExchange t) {
+            HashMap<String,Object> query = null;
+            query = getQuery(t);
+            switch (t.getRequestMethod()) {
+                case "GET":
+                    HashMap<Integer,String> users_send = new HashMap<>();
+                    for (int i = users.size() - 1; i >= 0; i--) {
+                        users_send.put(i,users.get(i).name);
+                    }
+                    Gson gson = new Gson();
+                    sendGoodResponse(t, gson.toJson(users_send));
                     break;
             }
         }

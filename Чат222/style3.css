@@ -57,7 +57,7 @@ textarea{
     display: inline-flex;
 }
 .soob{
-width: fit-content;
+width: max-content;
 height: auto;
 text-align: left;
 }
